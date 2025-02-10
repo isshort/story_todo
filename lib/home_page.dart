@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:story_todo/model/story.dart';
 import 'package:story_todo/widgets/story_view.dart';
 import 'package:story_todo/widgets/story_widget.dart';
 
@@ -16,12 +17,14 @@ final class HomePage extends StatelessWidget {
             height: 100,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 4,
+                itemCount: StoryModel.dummyStories.length,
                 itemBuilder: (context, index) {
                   return StoryWidget(onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => PageViewWidget(),
+                        builder: (context) => PageViewWidget(
+                          story: StoryModel.dummyStories[index],
+                        ),
                       ),
                     );
                   });
@@ -36,8 +39,9 @@ final class HomePage extends StatelessWidget {
 final class PageViewWidget extends StatefulWidget {
   const PageViewWidget({
     super.key,
+    required this.story,
   });
-
+  final StoryModel story;
   @override
   State<PageViewWidget> createState() => _PageViewWidgetState();
 }
@@ -48,9 +52,7 @@ class _PageViewWidgetState extends State<PageViewWidget> {
   @override
   void initState() {
     super.initState();
-    pageController = PageController(
-      initialPage: 1,
-    );
+    pageController = PageController();
   }
 
   @override
@@ -63,11 +65,11 @@ class _PageViewWidgetState extends State<PageViewWidget> {
   Widget build(BuildContext context) {
     return PageView.builder(
       controller: pageController,
-      itemCount: 4,
+      itemCount: StoryModel.dummyStories.length,
       itemBuilder: (context, index) {
         return Scaffold(
           body: StoryView(
-            page: index,
+            story: widget.story,
             isTappedNext: (isNext) {
               if (isNext) {
                 pageController.nextPage(
