@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:story_todo/model/story.dart';
-import 'package:story_todo/widgets/story_view.dart';
+import 'package:story_todo/widgets/story_card.dart';
 import 'package:story_todo/widgets/story_widget.dart';
 
 final class HomePage extends StatelessWidget {
   const HomePage({super.key});
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -16,32 +16,37 @@ final class HomePage extends StatelessWidget {
           SizedBox(
             height: 100,
             child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: StoryModel.dummyStories.length,
-                itemBuilder: (context, index) {
-                  return StoryWidget(onTap: () {
+              scrollDirection: Axis.horizontal,
+              itemCount: StoryModel.dummyStories.length,
+              itemBuilder: (context, index) {
+                return StoryWidget(
+                  onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(
+                      MaterialPageRoute<bool>(
                         builder: (context) => PageViewWidget(
-                          story: StoryModel.dummyStories[index],
+                          initialPage: index,
+                          // selectedStory: StoryModel.dummyStories[index],
                         ),
                       ),
                     );
-                  });
-                }),
-          )
+                  },
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
   }
+
 }
 
 final class PageViewWidget extends StatefulWidget {
   const PageViewWidget({
+    required this.initialPage,
     super.key,
-    required this.story,
   });
-  final StoryModel story;
+  final int initialPage;
   @override
   State<PageViewWidget> createState() => _PageViewWidgetState();
 }
@@ -52,7 +57,9 @@ class _PageViewWidgetState extends State<PageViewWidget> {
   @override
   void initState() {
     super.initState();
-    pageController = PageController();
+    pageController = PageController(
+      initialPage: widget.initialPage,
+    );
   }
 
   @override
@@ -68,8 +75,8 @@ class _PageViewWidgetState extends State<PageViewWidget> {
       itemCount: StoryModel.dummyStories.length,
       itemBuilder: (context, index) {
         return Scaffold(
-          body: StoryView(
-            story: widget.story,
+          body: StoryCard(
+            story: StoryModel.dummyStories[index],
             isTappedNext: (isNext) {
               if (isNext) {
                 pageController.nextPage(
