@@ -5,5 +5,5 @@ enum ImageEnum {
   ///
   ;
 
-  String get jpgImage => 'assets/$this.jpg';
+  String get jpgImage => 'assets/$name.jpeg';
 }

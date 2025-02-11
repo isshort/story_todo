@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:story_todo/model/story.dart';
-import 'package:story_todo/utils/image_enum.dart';
+
+import 'linear_progress.dart';
 
 final class StoryCard extends StatefulWidget {
   const StoryCard({required this.story, required this.isTappedNext, super.key});
@@ -15,11 +16,20 @@ class _StoryCardState extends State<StoryCard> {
   List<StoryItems>? storyItems;
 
   ValueNotifier<int> currentStoryNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<bool> isPausedNotifier = ValueNotifier<bool>(false);
 
   @override
   void initState() {
     super.initState();
     storyItems = widget.story.innerStories;
+  }
+
+  void _onProgressComplete() {
+    if (currentStoryNotifier.value < storyItems!.length - 1) {
+      currentStoryNotifier.value++;
+    } else {
+      widget.isTappedNext.call(true);
+    }
   }
 
   @override
@@ -46,13 +56,13 @@ class _StoryCardState extends State<StoryCard> {
           final currentStory = storyItems![value];
           return Container(
             decoration: BoxDecoration(
-              image: DecorationImage(
-                fit: BoxFit.fill,
-                image: AssetImage(
-                  ImageEnum.part1.jpgImage,
+                // image: DecorationImage(
+                //   fit: BoxFit.fill,
+                //   image: AssetImage(
+                //     ImageEnum.part1.jpgImage,
+                //   ),
+                // ),
                 ),
-              ),
-            ),
             child: Stack(
               children: [
                 const CloseButtonWidget(),
@@ -62,9 +72,19 @@ class _StoryCardState extends State<StoryCard> {
                       height: 20,
                     ),
                     Row(
-                      children: storyItems?.map(
-                            (e) {
-                              return const CustomLinearProgressWidget();
+                      children: storyItems?.asMap().entries.map(
+                            (entry) {
+                              int index = entry.key;
+                              return CustomLinearProgressWidget(
+                                duration: Duration(seconds: 3),
+                                isPausedNotifier: isPausedNotifier,
+                                onComplete: () {
+                                  if (index == currentStoryNotifier.value) {
+                                    _onProgressComplete();
+                                  }
+                                },
+                                isActive: index == currentStoryNotifier.value,
+                              );
                             },
                           ).toList() ??
                           [],
@@ -77,59 +97,18 @@ class _StoryCardState extends State<StoryCard> {
                       currentStory.description,
                       style: TextTheme.of(context).bodyLarge,
                     ),
+                    ElevatedButton(
+                      onPressed: () {
+                        isPausedNotifier.value = !isPausedNotifier.value;
+                      },
+                      child: Text('Pause/Resume'),
+                    ),
                   ],
                 ),
               ],
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class CustomLinearProgressWidget extends StatefulWidget {
-  const CustomLinearProgressWidget({
-    super.key,
-  });
-
-  @override
-  State<CustomLinearProgressWidget> createState() =>
-      _CustomLinearProgressWidgetState();
-}
-
-class _CustomLinearProgressWidgetState
-    extends State<CustomLinearProgressWidget> {
-  ValueNotifier<double> progressNotifier = ValueNotifier<double>(0);
-
-  @override
-  void initState() {
-    super.initState();
-
-    Future.delayed(
-      const Duration(seconds: 2),
-      () {
-        progressNotifier.value = progressNotifier.value + 0.5;
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: SizedBox(
-          height: 12,
-          child: ValueListenableBuilder(
-            valueListenable: progressNotifier,
-            builder: (context, value, child) {
-              return LinearProgressIndicator(
-                value: value,
-              );
-            },
-          ),
-        ),
       ),
     );
   }
