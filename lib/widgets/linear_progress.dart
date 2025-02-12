@@ -22,6 +22,7 @@ class CustomLinearProgressWidget extends StatefulWidget {
 class _CustomLinearProgressWidgetState extends State<CustomLinearProgressWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late Animation<double> _animation;
 
   @override
   void initState() {
@@ -34,7 +35,7 @@ class _CustomLinearProgressWidgetState extends State<CustomLinearProgressWidget>
           widget.onComplete();
         }
       });
-
+    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
     widget.isPausedNotifier.addListener(_pauseProgress);
     if (widget.isActive) _controller.forward();
   }
@@ -51,6 +52,7 @@ class _CustomLinearProgressWidgetState extends State<CustomLinearProgressWidget>
   void dispose() {
     _controller.dispose();
     widget.isPausedNotifier.removeListener(_pauseProgress);
+ 
     super.dispose();
   }
 
@@ -61,9 +63,14 @@ class _CustomLinearProgressWidgetState extends State<CustomLinearProgressWidget>
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: SizedBox(
           height: 12,
-          child: LinearProgressIndicator(
-            value: _controller.value,
-            color: Colors.blue,
+          child: AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return LinearProgressIndicator(
+                  value: _animation.value,
+                  color: Colors.blue,
+                );
+              }
           ),
         ),
       ),

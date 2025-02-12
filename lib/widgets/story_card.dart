@@ -57,13 +57,9 @@ class _StoryCardState extends State<StoryCard> {
             widget.isTappedNext.call(false);
           }
         }
-
-        // if (details.globalPosition.dx > size) {
-        //   widget.isTappedNext.call(true);
-        // } else {
-        //   widget.isTappedNext.call(false);
-        // }
       },
+
+    
       child: ValueListenableBuilder(
         valueListenable: currentStoryNotifier,
         builder: (context, value, child) {
@@ -93,12 +89,12 @@ class _StoryCardState extends State<StoryCard> {
                             (entry) {
                               int index = entry.key;
                               return CustomLinearProgressWidget(
-                                duration: Duration(seconds: 1),
+                                duration: Duration(seconds: 3),
                                 isPausedNotifier: isPausedNotifier,
                                 onComplete: () {
-                                  // if (index == currentStoryNotifier.value) {
-                                  //   _onProgressComplete();
-                                  // }
+                                  if (index == currentStoryNotifier.value) {
+                                    _onProgressComplete();
+                                  }
                                 },
                                 isActive: index == currentStoryNotifier.value,
                               );
