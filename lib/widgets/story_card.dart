@@ -36,16 +36,33 @@ class _StoryCardState extends State<StoryCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onTapUp: (details) {
-        if (currentStoryNotifier.value < storyItems!.length - 1) {
-          currentStoryNotifier.value++;
-          return;
-        }
+    
         final size = MediaQuery.sizeOf(context).width / 2;
-        if (details.globalPosition.dx > size) {
-          widget.isTappedNext.call(true);
-        } else {
-          widget.isTappedNext.call(false);
+
+        /// Check if the user tapped on the right side or left side of the screen
+        /// according to the screen width and the current story index to navigate
+        /// to the next or previous story.
+        if (storyItems != null) {
+          if (details.globalPosition.dx > size) {
+            if (currentStoryNotifier.value < storyItems!.length - 1) {
+              currentStoryNotifier.value++;
+              return;
+            }
+            widget.isTappedNext.call(true);
+          } else {
+            if (currentStoryNotifier.value > 0) {
+              currentStoryNotifier.value--;
+              return;
+            }
+            widget.isTappedNext.call(false);
+          }
         }
+
+        // if (details.globalPosition.dx > size) {
+        //   widget.isTappedNext.call(true);
+        // } else {
+        //   widget.isTappedNext.call(false);
+        // }
       },
       child: ValueListenableBuilder(
         valueListenable: currentStoryNotifier,
@@ -76,12 +93,12 @@ class _StoryCardState extends State<StoryCard> {
                             (entry) {
                               int index = entry.key;
                               return CustomLinearProgressWidget(
-                                duration: Duration(seconds: 3),
+                                duration: Duration(seconds: 1),
                                 isPausedNotifier: isPausedNotifier,
                                 onComplete: () {
-                                  if (index == currentStoryNotifier.value) {
-                                    _onProgressComplete();
-                                  }
+                                  // if (index == currentStoryNotifier.value) {
+                                  //   _onProgressComplete();
+                                  // }
                                 },
                                 isActive: index == currentStoryNotifier.value,
                               );
