@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:story_todo/model/story.dart';
-import 'package:story_todo/widgets/story_card.dart';
+import 'package:story_todo/story_page.dart';
 import 'package:story_todo/widgets/story_widget.dart';
 
 final class HomePage extends StatelessWidget {
@@ -23,9 +23,8 @@ final class HomePage extends StatelessWidget {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute<bool>(
-                        builder: (context) => PageViewWidget(
+                        builder: (context) => StoryPage(
                           initialPage: index,
-                          // selectedStory: StoryModel.dummyStories[index],
                         ),
                       ),
                     );
@@ -41,61 +40,3 @@ final class HomePage extends StatelessWidget {
 
 }
 
-final class PageViewWidget extends StatefulWidget {
-  const PageViewWidget({
-    required this.initialPage,
-    super.key,
-  });
-  final int initialPage;
-  @override
-  State<PageViewWidget> createState() => _PageViewWidgetState();
-}
-
-class _PageViewWidgetState extends State<PageViewWidget> {
-  late PageController pageController;
-
-  @override
-  void initState() {
-    super.initState();
-    pageController = PageController(
-      initialPage: widget.initialPage,
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    pageController.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return PageView.builder(
-      controller: pageController,
-      itemCount: StoryModel.dummyStories.length,
-      itemBuilder: (context, index) {
-        return Scaffold(
-          body: StoryCard(
-            story: StoryModel.dummyStories[index],
-            isTappedNext: (isNext) {
-              if (isNext) {
-                pageController.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeIn,
-                );
-              } else {
-                pageController.previousPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeIn,
-                );
-              }
-            },
-            onStoryFinished: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        );
-      },
-    );
-  }
-}

@@ -6,11 +6,12 @@ import 'linear_progress.dart';
 final class StoryCard extends StatefulWidget {
   const StoryCard(
       {required this.story,
-      required this.isTappedNext,
+      required this.onNextStory,
       super.key,
       required this.onStoryFinished});
+
   final StoryModel story;
-  final void Function(bool isNext) isTappedNext;
+  final void Function(bool isNext) onNextStory;
   final VoidCallback onStoryFinished;
 
   @override
@@ -19,10 +20,11 @@ final class StoryCard extends StatefulWidget {
 
 class _StoryCardState extends State<StoryCard>
     with SingleTickerProviderStateMixin {
-  List<StoryItems>? storyItems;
 
+  List<StoryItems>? storyItems;
   ValueNotifier<int> currentStoryNotifier = ValueNotifier<int>(0);
   final ValueNotifier<bool> isPausedNotifier = ValueNotifier<bool>(false);
+
   @override
   void initState() {
     super.initState();
@@ -33,7 +35,6 @@ class _StoryCardState extends State<StoryCard>
     if (currentStoryNotifier.value < storyItems!.length - 1) {
       currentStoryNotifier.value++;
     } else {
-      // widget.isTappedNext.call(true);
       widget.onStoryFinished.call();
     }
   }
@@ -41,6 +42,9 @@ class _StoryCardState extends State<StoryCard>
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      onLongPress: () {
+        isPausedNotifier.value = !isPausedNotifier.value;
+      },
       onTapUp: (details) {
         final size = MediaQuery.sizeOf(context).width / 2;
 
@@ -53,13 +57,13 @@ class _StoryCardState extends State<StoryCard>
               currentStoryNotifier.value++;
               return;
             }
-            widget.isTappedNext.call(true);
+            widget.onNextStory.call(true);
           } else {
             if (currentStoryNotifier.value > 0) {
               currentStoryNotifier.value--;
               return;
             }
-            widget.isTappedNext.call(false);
+            widget.onNextStory.call(false);
           }
         }
       },
@@ -112,12 +116,6 @@ class _StoryCardState extends State<StoryCard>
                     Text(
                       currentStory.description,
                       style: TextTheme.of(context).bodyLarge,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        isPausedNotifier.value = !isPausedNotifier.value;
-                      },
-                      child: Text('Pause/Resume'),
                     ),
                   ],
                 ),

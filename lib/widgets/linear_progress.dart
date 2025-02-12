@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomLinearProgressWidget extends StatefulWidget {
+final class CustomLinearProgressWidget extends StatefulWidget {
   final Duration duration;
   final ValueNotifier<bool> isPausedNotifier;
   final VoidCallback onComplete;
@@ -59,16 +59,10 @@ class _CustomLinearProgressWidgetState extends State<CustomLinearProgressWidget>
     }
   }
 
-  // void resetProgress() {
-  //   _controller.reset();
-  //   _controller.forward();
-  // }
-
   @override
   void dispose() {
     _controller.dispose();
-    widget.isPausedNotifier.removeListener(_pauseProgress);
-
+    // widget.isPausedNotifier.removeListener(widget.onPaused);
     super.dispose();
   }
 
