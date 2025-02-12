@@ -4,20 +4,25 @@ import 'package:story_todo/model/story.dart';
 import 'linear_progress.dart';
 
 final class StoryCard extends StatefulWidget {
-  const StoryCard({required this.story, required this.isTappedNext, super.key});
+  const StoryCard(
+      {required this.story,
+      required this.isTappedNext,
+      super.key,
+      required this.onStoryFinished});
   final StoryModel story;
   final void Function(bool isNext) isTappedNext;
+  final VoidCallback onStoryFinished;
 
   @override
   State<StoryCard> createState() => _StoryCardState();
 }
 
-class _StoryCardState extends State<StoryCard> {
+class _StoryCardState extends State<StoryCard>
+    with SingleTickerProviderStateMixin {
   List<StoryItems>? storyItems;
 
   ValueNotifier<int> currentStoryNotifier = ValueNotifier<int>(0);
   final ValueNotifier<bool> isPausedNotifier = ValueNotifier<bool>(false);
-
   @override
   void initState() {
     super.initState();
@@ -28,7 +33,8 @@ class _StoryCardState extends State<StoryCard> {
     if (currentStoryNotifier.value < storyItems!.length - 1) {
       currentStoryNotifier.value++;
     } else {
-      widget.isTappedNext.call(true);
+      // widget.isTappedNext.call(true);
+      widget.onStoryFinished.call();
     }
   }
 
@@ -36,7 +42,6 @@ class _StoryCardState extends State<StoryCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onTapUp: (details) {
-    
         final size = MediaQuery.sizeOf(context).width / 2;
 
         /// Check if the user tapped on the right side or left side of the screen
@@ -58,8 +63,6 @@ class _StoryCardState extends State<StoryCard> {
           }
         }
       },
-
-    
       child: ValueListenableBuilder(
         valueListenable: currentStoryNotifier,
         builder: (context, value, child) {

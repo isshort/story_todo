@@ -90,6 +90,9 @@ class _PageViewWidgetState extends State<PageViewWidget> {
                 );
               }
             },
+            onStoryFinished: () {
+              Navigator.of(context).pop();
+            },
           ),
         );
       },

@@ -40,6 +40,17 @@ class _CustomLinearProgressWidgetState extends State<CustomLinearProgressWidget>
     if (widget.isActive) _controller.forward();
   }
 
+  @override
+  void didUpdateWidget(covariant CustomLinearProgressWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      _controller.reset();
+      _controller.forward();
+    } else if (!widget.isActive && oldWidget.isActive) {
+      _controller.fling();
+    }
+  }
+
   void _pauseProgress() {
     if (widget.isPausedNotifier.value) {
       _controller.stop();
@@ -48,11 +59,16 @@ class _CustomLinearProgressWidgetState extends State<CustomLinearProgressWidget>
     }
   }
 
+  // void resetProgress() {
+  //   _controller.reset();
+  //   _controller.forward();
+  // }
+
   @override
   void dispose() {
     _controller.dispose();
     widget.isPausedNotifier.removeListener(_pauseProgress);
- 
+
     super.dispose();
   }
 
@@ -70,8 +86,7 @@ class _CustomLinearProgressWidgetState extends State<CustomLinearProgressWidget>
                   value: _animation.value,
                   color: Colors.blue,
                 );
-              }
-          ),
+              }),
         ),
       ),
     );
